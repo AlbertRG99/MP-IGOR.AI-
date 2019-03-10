@@ -91,3 +91,54 @@ sed -i '#include "oper2.h"' ~/mp/src/oper2.cpp
 #En este caso mi biblioteca se llamará "liboper.a".
 #La guardaremos en el directorio "lib"
 #contendrá un solo fichero objeto llamado "oper.o"
+
+#CONSTRUYO LA BIBLIOTECA:
+#Usando el comando "ar" y pasando los parametros del programa con "rvs"
+
+ar rvs ~/mp/lib/liboper2.a ~/mp/obj/oper2.o
+
+#Ahora ENLAZO LA BIBLIOTECA:
+#Para construir el ejecutable uso la opcion "-l" (libreria), seguida de el nombre de la biblioteca (sin poner el prefijo lib ni el sufijo .a).
+#Para especificar donde hay que usar la biblioteca uso el comando "-L" (En el ejemoplo usaremos el directorio "lib"):
+
+#FUNCIONAMIENTO DE LOS COMANDOS/OPCIONES "-o" y "-c"
+
+# "-o":
+
+#Coloca la salida en el archivo de archivo. Esto se aplica a cualquier tipo de salida que
+#           se está produciendo, ya sea un archivo ejecutable, un objeto
+#           archivo, un archivo ensamblador o código C preprocesado.
+#
+#           Si no se especifica -o, el valor predeterminado es poner un archivo ejecutable en
+#           a.out, el archivo objeto para source.suffix en source.o, su ensamblador
+#           archivo en source.s, un archivo de encabezado precompilado en source.suffix.gch,
+#           y todas las fuentes de C preprocesadas en salida estándar.
+
+# "-c":
+
+#Place output in file file.  This applies to whatever sort of output
+#          is being produced, whether it be an executable file, an object
+#          file, an assembler file or preprocessed C code.
+#
+#          If -o is not specified, the default is to put an executable file in
+#          a.out, the object file for source.suffix in source.o, its assembler
+#          file in source.s, a precompiled header file in source.suffix.gch,
+#          and all preprocessed C source on standard output.
+
+g++ -o ~/mp/bin/demo2 ~/mp/obj/demo2.o -L.~/mp/lib -loper2
+
+#En vez de hacerlo todo de forma manual podemos crear un archivo MAKEFILE que autocompila todos los archivos, formando el programa final:
+
+#____MAKEFILES____
+
+#Vamos a crear un makefile que compile el programa con el siguiente codigo:
+
+echo '
+all : ~/mp/bin/demo2
+~/mp/bin/demo2 : ~/mp/obj/demo2.o ~/mp/obj/oper2.o
+  g++ -0 ~/mp/bin/demo2 ~/mp/obj/demo2.o ~/mp/obj/oper2.0
+~/mp/obj/demo2.o : ~/mp/src/demo2.cpp ~/mp/include/oper2.h
+  g++ -c -I.~/mp/include -o ~/mp/obj/demo2.o ~/mp/src/demo2.cpp
+~/mp/obj/oper2.o : ~/mp/src/oper2.cpp ~/mp/include/oper2.h
+  g++ -c -I.~/mp/include -o ~/mp/obj/oper2.o ~/mp/src/oper2.cpp
+'
