@@ -1,0 +1,93 @@
+#!/bin/bash
+
+#Creo una estructura de directorios (partiendo de "/") como la siguiente:
+
+mkdir -p mp/ {bin,doc,include,lib,obj,src}
+
+#Creo un archivo del tipo "Hola Mundo con el siguiente codigo y lo guardo en el directorio SRC"
+
+echo "#include <iostream>
+using namespace std;
+
+int main(){
+ cout << "\n Hola Mundo \n";
+}" > ~/mp/src/holaMundo.cpp
+
+#Para compilar usaré la siguiente estructura "g++ -o nombre-ejecutable nombre-fuente"
+#Ahora voy a hacer un binario de "holaMundo.cpp" y lo voy a almacenar en el directorio "bin"(binary) con el nombre "holaMundo";
+#Posteriormente lo voy a compilar y depués ejecutar con "./".
+
+g++ -o bin/holaMundo src/holaMundo.cpp
+./bin/holaMundo
+
+#A recordar:
+#
+#Pre-Procesador: Integrado en el gc++, recibe el código fuente de las cabeceras (.h) y los programas (.cpp) y devuelve el código fuente procesado.
+#Compilador:Recibre el código fuente pre-procesado, analiza sintáctica, semaántica y léxicamente y  devuelve el código objeto (.o).
+#Linker:Recibe el código objeto y las bibliotecas y vuelve a devolver el ejecutable en código máquina.
+
+#Ejemplo:
+#Construyo una version modular de "demo1.cpp":
+
+echo '
+#include <iostream>
+#include "oper2.h
+
+using namespace std;
+int main(int arg, char *argv[]){
+  int a, b;
+  cout <<"Introduce el primer valor: ";
+  cin >> a;
+  cout <<"Introduce el segundo valor";
+  cin >> b;
+  cout <<"suma = " << suma(a,b) << endl;
+  cout <<"resta = " << resta(a,b) <<endl;
+  return 0;
+}' > demo1.cpp
+
+#Copio demo1.cpp a demo2.cpp (en ~/src):
+
+cp demo1.cpp ~/mp/src/demo2.cpp
+
+#Creao un fichero oper2.h (en include) que contendrá la definición de
+#las funciones (la interface del módulo):
+
+echo'
+int suma (int a, int b);
+int resta (int a, int b);
+int multiplica (int a, int b);
+int divide (int a, int b);
+' > ~/mp/include/oper2.h
+
+#Crear un nuevo fichero oper2.cpp (en src) que contenga la implementación
+# de las funciones suma, resta, multiplicación y división (la implementación del módulo):
+
+echo'
+#include "oper2.sh"
+
+int suma (int a, int b){
+  return a + b;
+}
+int resta (int a, int b){
+  return a - b;
+}
+
+int multiplica (int a, int b){
+  return a * b;
+}
+
+int divide (int a, int b){
+  return a / b;
+}' > ~/mp/src/oper2.cpp
+
+#En demo2.cpp agrego una línea #include “oper2.h”:
+
+sed -i '#include "oper2.h"' ~/mp/src/oper2.cpp
+
+
+---------------#CONSTRUCCIÓN DE LA BIBLIOTECA:-------------------
+
+#La extensión de las bibliotecas es " .a" y suelen comenzar con la palabra "lib"
+#En este caso mi biblioteca se llamará "liboper.a".
+#La guardaremos en el directorio "lib"
+#contendrá un solo fichero objeto llamado "oper.o"
