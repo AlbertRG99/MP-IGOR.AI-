@@ -135,10 +135,73 @@ g++ -o ~/mp/bin/demo2 ~/mp/obj/demo2.o -L.~/mp/lib -loper2
 
 echo '
 all : ~/mp/bin/demo2
+
 ~/mp/bin/demo2 : ~/mp/obj/demo2.o ~/mp/obj/oper2.o
   g++ -0 ~/mp/bin/demo2 ~/mp/obj/demo2.o ~/mp/obj/oper2.0
+
 ~/mp/obj/demo2.o : ~/mp/src/demo2.cpp ~/mp/include/oper2.h
   g++ -c -I.~/mp/include -o ~/mp/obj/demo2.o ~/mp/src/demo2.cpp
+
 ~/mp/obj/oper2.o : ~/mp/src/oper2.cpp ~/mp/include/oper2.h
   g++ -c -I.~/mp/include -o ~/mp/obj/oper2.o ~/mp/src/oper2.cpp
+' > ~/mp/mimakefile.txt
+
+#Ejecuto MAKE y automaticamente construye el fichero ALL:
+
+make -f mimakefile
+
+#...Y CON LIBRERIAS:
+
+echo '
+#fichero makelibs
+all : ~/mp/bin/demo2
+~/mp/bin/demo2 : ~/mp/obj/demo2.o ~/mp/lib/liboper2.a
+  g++ -o ~/mp/bin/demo2 ~/mp/obj/demo2.o -L.~/mp/lib -loper2
+
+~/mp/obj/demo2.o : ~/mp/src/demo2.cpp ~/mp/include/oper2.h
+  g++ -c -I.~/mp/include -o ~/mp/obj/demo2.o ~/mp/src/demo2.cpp
+
+~/mp/obj/oper2.o : ~/mp/src/oper2.cpp ~/mp/include/oper2.h
+  g++ -c -I.~/mp/include -o ~/mp/obj/oper2.o ~/mp/src/oper2.cpp
+
+~/mp/lib/liboper2.a: ~/mp/obj/oper2.o
+  @echo construyendo libreria
+  ar rvs ~/mp/lib/liboper2.a ~/mp/obj/oper2.o
+clean:
+  rm ~/mp/obj/*.o
+' > makelibs.txt
+
+make -f makelibs.txt
+clean
+
+#Tambien podriamos simplificar el makefile usando variables o MACROS (definidas al principio):
+
+echo '
+
+--- USO DE MACROS EN EL MAKEFILE ---
+
+
+#fichero makemacro
+INCLUDE = ./include
+LIB = ./lib
+OBJ = ./obj
+SRC = ./src
+
+all : $(BIN)/demo2
+
+$(BIN)/demo2 : $(OBJ)/demo2.o $(LIB)/liboper2.a
+  g++ -o $(BIN)/demo2 $(OBJ)/demo2.o -L$(LIB) -loper2
+
+$(OBJ)/demo2.o : src/demo2.cpp include/oper2.h
+  g++ -c -I$(INCLUDE) -o $(OBJ)/demo2.o $(SRC)/demo2.cpp
+
+$(OBJ)/oper2.o : src/oper2.cpp include/oper2.h
+  g++ -c -I$(INCLUDE) -o $(OBJ)/oper2.o $(SRC)/oper2.cpp
+
+$(LIB)/liboper2.a: $(OBJ)/oper2.o
+  @echo construyendo libreria
+  ar rvs $(LIB)/liboper2.a $(OBJ)/oper2.o
+
+clean :
+	rm $(OBJ)/*.o
 '
